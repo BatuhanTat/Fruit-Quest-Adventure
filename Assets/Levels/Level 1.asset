@@ -162,4 +162,4 @@ MonoBehaviour:
     hasGlass: 0
   goalType: 0
   moveAmount: 10
-  targetScore: 1000
+  targetScore: 10000
