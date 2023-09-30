@@ -86,11 +86,16 @@ public class LevelEditor : MonoBehaviour
 
         if (IsValidPosition(x, y))
         {
-            if (Input.GetKeyDown(KeyCode.Alpha1)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[0]);
-            if (Input.GetKeyDown(KeyCode.Alpha2)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[1]);
-            if (Input.GetKeyDown(KeyCode.Alpha3)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[2]);
-            if (Input.GetKeyDown(KeyCode.Alpha4)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[3]);
-            if (Input.GetKeyDown(KeyCode.Alpha5)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[4]);
+            if (Input.GetKeyDown(KeyCode.Alpha1)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[0], grid.GetGridObject(x, y).GetIsHole());
+            if (Input.GetKeyDown(KeyCode.Alpha2)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[1], grid.GetGridObject(x, y).GetIsHole());
+            if (Input.GetKeyDown(KeyCode.Alpha3)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[2], grid.GetGridObject(x, y).GetIsHole());
+            if (Input.GetKeyDown(KeyCode.Alpha4)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[3], grid.GetGridObject(x, y).GetIsHole());
+            if (Input.GetKeyDown(KeyCode.Alpha5)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[4], grid.GetGridObject(x, y).GetIsHole());
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                grid.GetGridObject(x, y).SetIsHole(!grid.GetGridObject(x, y).GetIsHole());
+                grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[0], grid.GetGridObject(x, y).GetIsHole());
+            }
 
             if (Input.GetMouseButtonDown(1))
             {
@@ -108,8 +113,12 @@ public class LevelEditor : MonoBehaviour
         gridPosition.glassVisualGameObject = glassGridVisualTransform.gameObject;
         gridPosition.levelGridPosition = levelGridPosition;
 
-        gridPosition.SetGemSO(levelGridPosition.gemSO);
+        gridPosition.SetGemSO(levelGridPosition.gemSO, levelGridPosition.isHole);
+
+
         gridPosition.SetHasGlass(levelGridPosition.hasGlass);
+
+
     }
 
     private bool IsValidPosition(int x, int y)
@@ -151,10 +160,28 @@ public class LevelEditor : MonoBehaviour
             return grid.GetWorldPosition(x, y);
         }
 
-        public void SetGemSO(GemSO gemSO)
+        public void SetGemSO(GemSO gemSO, bool isHole)
         {
-            spriteRenderer.sprite = gemSO.sprite;
-            levelGridPosition.gemSO = gemSO;
+            if (!isHole)
+            {
+                spriteRenderer.sprite = gemSO.sprite;
+                levelGridPosition.gemSO = gemSO;
+#if UNITY_EDITOR
+                UnityEditor.EditorUtility.SetDirty(levelSO);
+#endif
+            }
+            else
+            {
+                spriteRenderer.sprite = null;
+                levelGridPosition.gemSO = null;
+            }
+
+        }
+
+
+        public void SetIsHole(bool isHole)
+        {
+            levelGridPosition.isHole = isHole;
 #if UNITY_EDITOR
             UnityEditor.EditorUtility.SetDirty(levelSO);
 #endif
@@ -172,6 +199,11 @@ public class LevelEditor : MonoBehaviour
         public bool GetHasGlass()
         {
             return levelGridPosition.hasGlass;
+        }
+
+        public bool GetIsHole()
+        {
+            return levelGridPosition.isHole;
         }
 
     }

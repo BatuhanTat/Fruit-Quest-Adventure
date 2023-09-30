@@ -26,5 +26,6 @@ public class LevelSO : ScriptableObject
         public int x;
         public int y;
         public bool hasGlass;
+        public bool isHole;
     }
 }

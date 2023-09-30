@@ -75,23 +75,28 @@ public class Match3Visual : MonoBehaviour
                 Vector3 position = grid.GetWorldPosition(x, y);
                 position = new Vector3(position.x, 12);
 
-                // Visual Transform
-                Transform gemGridVisualTransform = Instantiate(pfGemGridVisual, position, Quaternion.identity);
-                gemGridVisualTransform.Find("sprite").GetComponent<SpriteRenderer>().sprite = gemGrid.GetGem().sprite;
+                if(!gemGridPosition.IsHole())
+                {
+                    // Visual Transform
+                    Transform gemGridVisualTransform = Instantiate(pfGemGridVisual, position, Quaternion.identity);
+                    gemGridVisualTransform.Find("sprite").GetComponent<SpriteRenderer>().sprite = gemGrid.GetGem().sprite;
 
-                GemGridVisual gemGridVisual = new GemGridVisual(gemGridVisualTransform, gemGrid);
+                    GemGridVisual gemGridVisual = new GemGridVisual(gemGridVisualTransform, gemGrid);
 
-                gemGridDictionary[gemGrid] = gemGridVisual;
+                    gemGridDictionary[gemGrid] = gemGridVisual;
 
+
+                    // Background Grid Visual
+                    Transform backgroundVisualTransform = Instantiate(pfBackgroundGridVisual, grid.GetWorldPosition(x, y), Quaternion.identity);                   
+                }
+              
                 // Glass Visual Transform
                 Transform glassGridVisualTransform = Instantiate(pfGlassGridVisual, grid.GetWorldPosition(x, y), Quaternion.identity);
 
                 GlassGridVisual glassGridVisual = new GlassGridVisual(glassGridVisualTransform, gemGridPosition);
 
                 glassGridDictionary[gemGridPosition] = glassGridVisual;
-
-                // Background Grid Visual
-                Instantiate(pfBackgroundGridVisual, grid.GetWorldPosition(x, y), Quaternion.identity);
+             
             }
         }
 
@@ -173,7 +178,7 @@ public class Match3Visual : MonoBehaviour
                         { y = startDragY + 1; }
                     }
 
-                    if (match3.CanSwapGridPositions(startDragX, startDragY, x, y)) ;
+                    if (match3.CanSwapGridPositions(startDragX, startDragY, x, y)) 
                     { SwapGridPositions(startDragX, startDragY, x, y); }
                 }
                 break;
@@ -275,6 +280,20 @@ public class Match3Visual : MonoBehaviour
             Vector3 moveDir = (targetPosition - transform.position);
             float moveSpeed = 10f;
             transform.position += moveDir * moveSpeed * Time.deltaTime;
+        }
+    }
+
+    public class BackgroundGridVisual
+    {
+        private Transform transform;
+        private Match3.GemGridPosition gemGridPosition;
+
+        public BackgroundGridVisual(Transform transform, Match3.GemGridPosition gemGridPosition)
+        {
+            this.transform=transform;   
+            this.gemGridPosition = gemGridPosition;
+
+            transform.gameObject.SetActive(!gemGridPosition.IsHole());
         }
     }
 
