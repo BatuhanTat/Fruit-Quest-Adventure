@@ -75,7 +75,7 @@ public class Match3Visual : MonoBehaviour
                 Vector3 position = grid.GetWorldPosition(x, y);
                 position = new Vector3(position.x, 12);
 
-                if(!gemGridPosition.IsHole())
+                if (!gemGridPosition.IsHole())
                 {
                     // Visual Transform
                     Transform gemGridVisualTransform = Instantiate(pfGemGridVisual, position, Quaternion.identity);
@@ -87,16 +87,16 @@ public class Match3Visual : MonoBehaviour
 
 
                     // Background Grid Visual
-                    Transform backgroundVisualTransform = Instantiate(pfBackgroundGridVisual, grid.GetWorldPosition(x, y), Quaternion.identity);                   
+                    Transform backgroundVisualTransform = Instantiate(pfBackgroundGridVisual, grid.GetWorldPosition(x, y), Quaternion.identity);
                 }
-              
+
                 // Glass Visual Transform
                 Transform glassGridVisualTransform = Instantiate(pfGlassGridVisual, grid.GetWorldPosition(x, y), Quaternion.identity);
 
                 GlassGridVisual glassGridVisual = new GlassGridVisual(glassGridVisualTransform, gemGridPosition);
 
                 glassGridDictionary[gemGridPosition] = glassGridVisual;
-             
+
             }
         }
 
@@ -123,7 +123,7 @@ public class Match3Visual : MonoBehaviour
         Match3.GemGridPosition gemGridPosition = sender as Match3.GemGridPosition;
         if (gemGridPosition != null && gemGridPosition.GetGemGrid() != null)
         {
-           gemGridDictionary.Remove(gemGridPosition.GetGemGrid());
+            gemGridDictionary.Remove(gemGridPosition.GetGemGrid());
         }
     }
 
@@ -144,12 +144,11 @@ public class Match3Visual : MonoBehaviour
 
             case State.WaitingForUser:
 
+                // Mouse input
                 if (Input.GetMouseButtonDown(0))
                 {
                     Vector3 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
                     grid.GetXY(mouseWorldPosition, out startDragX, out startDragY);
-
-                    startDragMouseWorldPosition = mouseWorldPosition;
                 }
 
                 if (Input.GetMouseButtonUp(0))
@@ -178,8 +177,49 @@ public class Match3Visual : MonoBehaviour
                         { y = startDragY + 1; }
                     }
 
-                    if (match3.CanSwapGridPositions(startDragX, startDragY, x, y)) 
+                    if (match3.CanSwapGridPositions(startDragX, startDragY, x, y))
                     { SwapGridPositions(startDragX, startDragY, x, y); }
+                }
+                // Touch input
+                if (Input.touchCount > 0)
+                {
+                    Touch touch = Input.GetTouch(0);
+
+                    if (touch.phase == TouchPhase.Began)
+                    {
+                        Vector3 touchWorldPosition = UtilsClass.GetWorldPosition(touch.position);
+                        grid.GetXY(touchWorldPosition, out startDragX, out startDragY);
+                    }
+                    else if (touch.phase == TouchPhase.Ended)
+                    {
+                        Vector3 touchWorldPosition = UtilsClass.GetWorldPosition(touch.position);
+                        grid.GetXY(touchWorldPosition, out int x, out int y);
+
+
+                        if (x != startDragX)
+                        {
+                            // Different X
+                            y = startDragY;
+
+                            if (x < startDragX)
+                            { x = startDragX - 1; }
+                            else
+                            { x = startDragX + 1; }
+                        }
+                        else
+                        {
+                            // Different Y
+                            x = startDragX;
+
+                            if (y < startDragY)
+                            { y = startDragY - 1; }
+                            else
+                            { y = startDragY + 1; }
+                        }
+
+                        if (match3.CanSwapGridPositions(startDragX, startDragY, x, y))
+                        { SwapGridPositions(startDragX, startDragY, x, y); }
+                    }
                 }
                 break;
             case State.TryFindMatches:
@@ -290,7 +330,7 @@ public class Match3Visual : MonoBehaviour
 
         public BackgroundGridVisual(Transform transform, Match3.GemGridPosition gemGridPosition)
         {
-            this.transform=transform;   
+            this.transform = transform;
             this.gemGridPosition = gemGridPosition;
 
             transform.gameObject.SetActive(!gemGridPosition.IsHole());
