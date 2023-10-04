@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Utils;
+using UnityEngine.Tilemaps;
 
 public class Match3Visual : MonoBehaviour
 {
@@ -23,6 +24,9 @@ public class Match3Visual : MonoBehaviour
     [SerializeField] private Match3 match3;
     [Tooltip("'Object' refers to gems, fruits etc. It is the thing that fills the grid.")]
     [SerializeField] private Transform objectHolder;
+    [Header("Tile Map")]
+    [SerializeField] Tilemap tilemap; // Reference to your Tilemap
+    [SerializeField] TileBase tileToInstantiate; // Reference to your tile asset
 
     private Grid<Match3.GemGridPosition> grid;
     private Dictionary<Match3.GemGrid, GemGridVisual> gemGridDictionary;
@@ -90,10 +94,12 @@ public class Match3Visual : MonoBehaviour
                     gemGridDictionary[gemGrid] = gemGridVisual;
 
 
-                    // Background Grid Visual
-                    Transform backgroundVisualTransform = Instantiate(pfBackgroundGridVisual, grid.GetWorldPosition(x, y), Quaternion.identity);
-                    // Set the parent to the objectHolder
-                    backgroundVisualTransform.parent = objectHolder;
+
+
+                    //      Background Grid Visual
+                    //Transform backgroundVisualTransform = Instantiate(pfBackgroundGridVisual, grid.GetWorldPosition(x, y), Quaternion.identity);
+                    //      Set the parent to the objectHolder
+                    //backgroundVisualTransform.parent = objectHolder;
                 }
 
                 // Glass Visual Transform
@@ -108,9 +114,26 @@ public class Match3Visual : MonoBehaviour
             }
         }
 
+        DrawTileBackground();
         SetBusyState(0.5f, () => SetState(State.TryFindMatches));
 
         isSetup = true;
+    }
+    private void DrawTileBackground()
+    {
+        for (int x = -1; x < grid.GetWidth() + 1; x++)
+        {
+            for (int y = -1; y < grid.GetHeight() + 1; y++)
+            {
+                Vector3 worldPosition = grid.GetWorldPosition(x, y);
+                Vector3Int cellPosition = new Vector3Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y), Mathf.FloorToInt(worldPosition.z));
+                tilemap.SetTile(cellPosition, tileToInstantiate);
+                // Force the Tilemap to Refresh
+                tilemap.RefreshAllTiles();
+            }
+        }
+
+
     }
 
     private void Match3_OnNewGemGridSpawned(object sender, Match3.OnNewGemGridSpawnedEventArgs e)
