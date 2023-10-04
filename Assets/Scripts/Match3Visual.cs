@@ -21,6 +21,8 @@ public class Match3Visual : MonoBehaviour
     [SerializeField] private Transform pfBackgroundGridVisual;
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private Match3 match3;
+    [Tooltip("'Object' refers to gems, fruits etc. It is the thing that fills the grid.")]
+    [SerializeField] private Transform objectHolder;
 
     private Grid<Match3.GemGridPosition> grid;
     private Dictionary<Match3.GemGrid, GemGridVisual> gemGridDictionary;
@@ -79,19 +81,25 @@ public class Match3Visual : MonoBehaviour
                 {
                     // Visual Transform
                     Transform gemGridVisualTransform = Instantiate(pfGemGridVisual, position, Quaternion.identity);
+                    // Set the parent to the objectHolder
+                    gemGridVisualTransform.parent = objectHolder;
+
                     gemGridVisualTransform.Find("sprite").GetComponent<SpriteRenderer>().sprite = gemGrid.GetGem().sprite;
 
                     GemGridVisual gemGridVisual = new GemGridVisual(gemGridVisualTransform, gemGrid);
-
                     gemGridDictionary[gemGrid] = gemGridVisual;
 
 
                     // Background Grid Visual
                     Transform backgroundVisualTransform = Instantiate(pfBackgroundGridVisual, grid.GetWorldPosition(x, y), Quaternion.identity);
+                    // Set the parent to the objectHolder
+                    backgroundVisualTransform.parent = objectHolder;
                 }
 
                 // Glass Visual Transform
                 Transform glassGridVisualTransform = Instantiate(pfGlassGridVisual, grid.GetWorldPosition(x, y), Quaternion.identity);
+                // Set the parent to the objectHolder
+                glassGridVisualTransform.parent = objectHolder;
 
                 GlassGridVisual glassGridVisual = new GlassGridVisual(glassGridVisualTransform, gemGridPosition);
 
@@ -111,6 +119,8 @@ public class Match3Visual : MonoBehaviour
         position = new Vector3(position.x, 12);
 
         Transform gemGridVisualTransform = Instantiate(pfGemGridVisual, position, Quaternion.identity);
+        // Set the parent to the objectHolder
+        gemGridVisualTransform.parent = objectHolder;
         gemGridVisualTransform.Find("sprite").GetComponent<SpriteRenderer>().sprite = e.gemGrid.GetGem().sprite;
 
         GemGridVisual gemGridVisual = new GemGridVisual(gemGridVisualTransform, e.gemGrid);

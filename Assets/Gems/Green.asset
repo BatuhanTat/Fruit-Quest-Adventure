@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Green
   m_EditorClassIdentifier: 
   gemName: Green
-  sprite: {fileID: 2801231552284419624, guid: 4d054e73e6ee9a14fa37361ed5b1e40c, type: 3}
+  sprite: {fileID: 21300000, guid: 50dd2e8acaa7426438d693e39eb73026, type: 3}

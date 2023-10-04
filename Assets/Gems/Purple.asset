@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Purple
   m_EditorClassIdentifier: 
   gemName: Purple
-  sprite: {fileID: -4825632588510966998, guid: 4d054e73e6ee9a14fa37361ed5b1e40c, type: 3}
+  sprite: {fileID: 21300000, guid: fbb6c45b2e0f5424cace793121f03e56, type: 3}
