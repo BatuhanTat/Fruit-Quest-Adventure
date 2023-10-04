@@ -104,9 +104,16 @@ public class LevelEditor : MonoBehaviour
             {
                 grid.GetGridObject(x, y).SetIsHole(!grid.GetGridObject(x, y).GetIsHole());
                 grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[0], grid.GetGridObject(x, y).GetIsHole());
+
                 Vector3 worldPosition = grid.GetWorldPosition(x, y);
                 Vector3Int cellPosition = new Vector3Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y), Mathf.FloorToInt(worldPosition.z));
-                tilemapBlock.SetTile(cellPosition, tileToInstantiate_Block);
+
+                if (grid.GetGridObject(x, y).GetIsHole())
+                {
+                    tilemapBlock.SetTile(cellPosition, tileToInstantiate_Block);
+                }
+                else
+                { tilemapBlock.SetTile(cellPosition, null); }
                 // Force the Tilemap to Refresh
                 tilemapBlock.RefreshAllTiles();
             }
@@ -125,6 +132,8 @@ public class LevelEditor : MonoBehaviour
         gemGridVisualTransform.parent = objectHolder;
 
         Transform glassGridVisualTransform = Instantiate(pfGlassGridVisual, gridPosition.GetWorldPosition(), Quaternion.identity);
+        glassGridVisualTransform.parent = objectHolder; 
+
 
         gridPosition.spriteRenderer = gemGridVisualTransform.Find("sprite").GetComponent<SpriteRenderer>();
         gridPosition.glassVisualGameObject = glassGridVisualTransform.gameObject;
@@ -146,6 +155,13 @@ public class LevelEditor : MonoBehaviour
                 Vector3 worldPosition = grid.GetWorldPosition(x, y);
                 Vector3Int cellPosition = new Vector3Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y), Mathf.FloorToInt(worldPosition.z));
                 tilemap.SetTile(cellPosition, tileToInstantiate);
+   
+                if (grid.GetGridObject(x, y) != null && grid.GetGridObject(x, y).IsHole())
+                {
+                    tilemapBlock.SetTile(cellPosition, tileToInstantiate_Block);
+                    // Force the Tilemap to Refresh
+                    tilemapBlock.RefreshAllTiles();
+                }
                 // Force the Tilemap to Refresh
                 tilemap.RefreshAllTiles();
             }
@@ -209,6 +225,8 @@ public class LevelEditor : MonoBehaviour
 
         }
 
+        public bool IsHole()
+        { return levelGridPosition.isHole; }
 
         public void SetIsHole(bool isHole)
         {
