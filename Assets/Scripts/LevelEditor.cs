@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Utils;
 using TMPro;
+using UnityEngine.Tilemaps;
 
 /*
  * Controls: 
@@ -17,6 +18,13 @@ public class LevelEditor : MonoBehaviour
     [SerializeField] private Transform pfGlassGridVisual;
     [SerializeField] private Transform cameraTransform;
     [SerializeField] private TextMeshProUGUI levelText;
+    [Tooltip("'Object' refers to gems, fruits etc. It is the thing that fills the grid.")]
+    [SerializeField] private Transform objectHolder;
+    [Header("Tile Map")]
+    [SerializeField] Tilemap tilemap; // Reference to  Tilemap
+    [SerializeField] Tilemap tilemapBlock; // Reference to  Tilemap Block
+    [SerializeField] TileBase tileToInstantiate; // Reference to "rule tile" asset
+    [SerializeField] TileBase tileToInstantiate_Block; // Reference to "block tile" asset
 
     private Grid<GridPosition> grid;
 
@@ -73,6 +81,7 @@ public class LevelEditor : MonoBehaviour
                     CreateVisual(grid.GetGridObject(x, y), levelGridPosition);
                 }
             }
+            DrawTileBackground();
         }
 
         cameraTransform.position = new Vector3(grid.GetWidth() * .5f, grid.GetHeight() * .5f, cameraTransform.position.z);
@@ -95,6 +104,11 @@ public class LevelEditor : MonoBehaviour
             {
                 grid.GetGridObject(x, y).SetIsHole(!grid.GetGridObject(x, y).GetIsHole());
                 grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[0], grid.GetGridObject(x, y).GetIsHole());
+                Vector3 worldPosition = grid.GetWorldPosition(x, y);
+                Vector3Int cellPosition = new Vector3Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y), Mathf.FloorToInt(worldPosition.z));
+                tilemapBlock.SetTile(cellPosition, tileToInstantiate_Block);
+                // Force the Tilemap to Refresh
+                tilemapBlock.RefreshAllTiles();
             }
 
             if (Input.GetMouseButtonDown(1))
@@ -107,6 +121,9 @@ public class LevelEditor : MonoBehaviour
     private void CreateVisual(GridPosition gridPosition, LevelSO.LevelGridPosition levelGridPosition)
     {
         Transform gemGridVisualTransform = Instantiate(pfGemGridVisual, gridPosition.GetWorldPosition(), Quaternion.identity);
+        // Set the parent to the objectHolder
+        gemGridVisualTransform.parent = objectHolder;
+
         Transform glassGridVisualTransform = Instantiate(pfGlassGridVisual, gridPosition.GetWorldPosition(), Quaternion.identity);
 
         gridPosition.spriteRenderer = gemGridVisualTransform.Find("sprite").GetComponent<SpriteRenderer>();
@@ -119,6 +136,20 @@ public class LevelEditor : MonoBehaviour
         gridPosition.SetHasGlass(levelGridPosition.hasGlass);
 
 
+    }
+    private void DrawTileBackground()
+    {
+        for (int x = -1; x < grid.GetWidth() + 1; x++)
+        {
+            for (int y = -1; y < grid.GetHeight() + 1; y++)
+            {
+                Vector3 worldPosition = grid.GetWorldPosition(x, y);
+                Vector3Int cellPosition = new Vector3Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y), Mathf.FloorToInt(worldPosition.z));
+                tilemap.SetTile(cellPosition, tileToInstantiate);
+                // Force the Tilemap to Refresh
+                tilemap.RefreshAllTiles();
+            }
+        }
     }
 
     private bool IsValidPosition(int x, int y)

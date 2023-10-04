@@ -26,7 +26,9 @@ public class Match3Visual : MonoBehaviour
     [SerializeField] private Transform objectHolder;
     [Header("Tile Map")]
     [SerializeField] Tilemap tilemap; // Reference to your Tilemap
+    [SerializeField] Tilemap tilemapBlock; // Reference to  Tilemap Block
     [SerializeField] TileBase tileToInstantiate; // Reference to your tile asset
+    [SerializeField] TileBase tileToInstantiate_Block; // Reference to "block tile" asset
 
     private Grid<Match3.GemGridPosition> grid;
     private Dictionary<Match3.GemGrid, GemGridVisual> gemGridDictionary;
@@ -128,12 +130,18 @@ public class Match3Visual : MonoBehaviour
                 Vector3 worldPosition = grid.GetWorldPosition(x, y);
                 Vector3Int cellPosition = new Vector3Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y), Mathf.FloorToInt(worldPosition.z));
                 tilemap.SetTile(cellPosition, tileToInstantiate);
+
+                Match3.GemGridPosition gemGridPosition = grid.GetGridObject(x, y);
+                if (gemGridPosition != null && gemGridPosition.IsHole())
+                {
+                    tilemapBlock.SetTile(cellPosition, tileToInstantiate_Block);
+                    // Force the Tilemap to Refresh
+                    tilemapBlock.RefreshAllTiles();
+                }   
                 // Force the Tilemap to Refresh
                 tilemap.RefreshAllTiles();
             }
         }
-
-
     }
 
     private void Match3_OnNewGemGridSpawned(object sender, Match3.OnNewGemGridSpawnedEventArgs e)
