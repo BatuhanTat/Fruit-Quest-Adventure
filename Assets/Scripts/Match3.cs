@@ -215,7 +215,7 @@ public class Match3 : MonoBehaviour
             if (linkedGemGridPositionList.Count >= 4)
             {
                 // More than 4 linked
-                score += 200;
+                score += 20;
 
                 // Special Explosion Gem
                 GemGridPosition explosionOriginGemGridPosition = linkedGemGridPositionList[0];
@@ -252,7 +252,7 @@ public class Match3 : MonoBehaviour
         }
 
         OnScoreChanged?.Invoke(this, EventArgs.Empty);
-        Debug.Log("Score : " + score);
+        //Debug.Log("Score : " + score);
 
         return foundMatch;
     }
@@ -261,7 +261,7 @@ public class Match3 : MonoBehaviour
     {
         if (gemGridPosition.HasGemGrid())
         {
-            score += 100;
+            score += 10;
 
             gemGridPosition.DestroyGem();
             OnGemGridPositionDestroyed?.Invoke(gemGridPosition, EventArgs.Empty);
@@ -270,7 +270,7 @@ public class Match3 : MonoBehaviour
 
         if (gemGridPosition.HasGlass())
         {
-            score += 100;
+            score += 10;
 
             gemGridPosition.DestroyGlass();
             OnGlassDestroyed?.Invoke(this, EventArgs.Empty);
@@ -638,13 +638,6 @@ public class Match3 : MonoBehaviour
 
     public bool TryIsGameOver()
     {
-        if (!HasMoveAvailable())
-        {
-            // No more moves, game over!
-            OnOutOfMoves?.Invoke(this, EventArgs.Empty);
-            return true;
-        }
-
         switch (levelSO.goalType)
         {
             default:
@@ -664,6 +657,13 @@ public class Match3 : MonoBehaviour
                     return true;
                 }
                 break;
+        }
+
+        if (!HasMoveAvailable())
+        {
+            // No more moves, game over!
+            OnOutOfMoves?.Invoke(this, EventArgs.Empty);
+            return true;
         }
 
         // Not game over

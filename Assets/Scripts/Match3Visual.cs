@@ -61,7 +61,7 @@ public class Match3Visual : MonoBehaviour
         this.match3 = match3;
         this.grid = grid;
 
-        float cameraYOffset = 1f;
+        float cameraYOffset = 2f;
         cameraTransform.position = new Vector3(grid.GetWidth() * 0.5f,
                                                grid.GetHeight() * 0.5f + cameraYOffset,
                                                cameraTransform.position.z);

@@ -156,11 +156,11 @@ MonoBehaviour:
     y: 5
     hasGlass: 0
     isHole: 0
-  - gemSO: {fileID: 11400000, guid: 59096d519ef14c14b95183b6a65635e5, type: 2}
+  - gemSO: {fileID: 0}
     x: 3
     y: 6
     hasGlass: 0
-    isHole: 0
+    isHole: 1
   - gemSO: {fileID: 11400000, guid: 29f7cabfaa479ef4396bcb0d86e391b9, type: 2}
     x: 4
     y: 0
@@ -231,11 +231,11 @@ MonoBehaviour:
     y: 6
     hasGlass: 0
     isHole: 0
-  - gemSO: {fileID: 0}
+  - gemSO: {fileID: 11400000, guid: e80938f418f2682409842038f3f4454c, type: 2}
     x: 6
     y: 0
     hasGlass: 0
-    isHole: 1
+    isHole: 0
   - gemSO: {fileID: 11400000, guid: 29f7cabfaa479ef4396bcb0d86e391b9, type: 2}
     x: 6
     y: 1
@@ -267,5 +267,5 @@ MonoBehaviour:
     hasGlass: 0
     isHole: 0
   goalType: 0
-  moveAmount: 10
-  targetScore: 10000
+  moveAmount: 1
+  targetScore: 130
