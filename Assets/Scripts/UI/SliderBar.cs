@@ -55,7 +55,7 @@ public class SliderBar : MonoBehaviour
         }
     }
 
-    public float NormalizeScore(int score)
+    private float NormalizeScore(int score)
     {
         float normalizedScore = (float)score / targetScore;
         return normalizedScore;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -11,14 +12,18 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI targetScoreText;
     [Header("Complete Popup")]
-    [SerializeField] private Transform popupWinTransform;
+    [SerializeField] private GameObject popupWinGameObject;
     [SerializeField] private TextMeshProUGUI scoreWinText;
     [SerializeField] Image[] starsComplete;
     [Header("Fail Popup")]
-    [SerializeField] private Transform popupLoseTransform;
+    [SerializeField] private GameObject popupLoseGameObject;
     [SerializeField] private TextMeshProUGUI scoreLoseText;
     [SerializeField] private TextMeshProUGUI targetScoreLoseText;
     [SerializeField] Image[] starsFail;
+    [Header("Pause Popup")]
+    [SerializeField] private GameObject pauseMenuGameObject;
+    [SerializeField] private GameObject SFX_Button;
+    [SerializeField] private GameObject BG_Button;
 
     private LevelSO levelSO;
 
@@ -34,16 +39,18 @@ public class UIManager : MonoBehaviour
     }
     private void Match3_OnWin(object sender, System.EventArgs e)
     {
-        popupWinTransform.gameObject.SetActive(true); 
+        popupWinGameObject.SetActive(true);
         scoreWinText.text = match3.GetScore().ToString();
         UpdateStars(starsComplete);
+        SFX_Manager.instance.PlaySFX(ClipType.LevelComplete);
     }
 
     private void Match3_OnOutOfMoves(object sender, System.EventArgs e)
     {
-            popupLoseTransform.gameObject.SetActive(true);
-            scoreLoseText.text = match3.GetScore().ToString();
-            UpdateStars(starsFail);
+        popupLoseGameObject.SetActive(true);
+        scoreLoseText.text = match3.GetScore().ToString();
+        UpdateStars(starsFail);
+        SFX_Manager.instance.PlaySFX(ClipType.LevelLose);
     }
 
     private void Match3_OnScoreChanged(object sender, System.EventArgs e)
@@ -104,9 +111,54 @@ public class UIManager : MonoBehaviour
             starsArr[2].gameObject.SetActive(true);
         }
     }
-    public float NormalizeScore(int score)
+    private float NormalizeScore(int score)
     {
         float normalizedScore = (float)score / levelSO.targetScore;
         return normalizedScore;
+    }
+
+    public void ReloadCurrentLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        SceneManager.LoadScene(currentSceneIndex);
+    }
+
+    public void LoadNextLevel()
+    {
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextSceneIndex = currentSceneIndex + 1;
+
+        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
+        {
+            SceneManager.LoadScene(nextSceneIndex);
+        }
+        else
+        {
+            // There are no more scenes in the build order, so reload the first scene (index 0).
+            SceneManager.LoadScene(0);
+        }
+    }
+    public void TogglePausePanel()
+    {
+        pauseMenuGameObject.SetActive(!pauseMenuGameObject.activeSelf);
+        BGMusic.instance.BGPauseToggle(pauseMenuGameObject.activeSelf);
+    }
+
+    public void Toggle_SFX(RectTransform rectTransform)
+    {
+        TogglePauseButtonVisual(rectTransform);
+        SFX_Manager.instance.audioSource.volume = SFX_Manager.instance.audioSource.volume == 0.0f ? 1.0f : 0.0f;
+    }
+    public void Toggle_BG(RectTransform rectTransform)
+    {
+        TogglePauseButtonVisual(rectTransform);
+        BGMusic.instance.audioSource.volume = BGMusic.instance.audioSource.volume == 0.0f ? BGMusic.instance.pauseVolume : 0.0f;
+        BGMusic.instance.isMuted = (!BGMusic.instance.isMuted);
+    }
+
+    private void TogglePauseButtonVisual(RectTransform rectTransform)
+    {
+        bool isOn = rectTransform.GetComponent<Toggle>().isOn;
+        rectTransform.anchoredPosition = isOn ? new Vector2(190.0f, 0.0f) : Vector2.zero;
     }
 }

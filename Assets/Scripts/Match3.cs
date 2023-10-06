@@ -232,7 +232,11 @@ public class Match3 : MonoBehaviour
                 explosionGridPositionList.Add(new Vector2Int(explosionX - 1, explosionY + 1));
                 explosionGridPositionList.Add(new Vector2Int(explosionX + 0, explosionY + 1));
                 explosionGridPositionList.Add(new Vector2Int(explosionX + 1, explosionY + 1));
+
+                SFX_Manager.instance.PlaySFX(ClipType.Match4);
             }
+            else
+            { SFX_Manager.instance.PlaySFX(ClipType.Match3); }
 
             foundMatch = true;
         }
