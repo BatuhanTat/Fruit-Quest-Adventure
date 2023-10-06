@@ -22,7 +22,7 @@ public class SliderBar : MonoBehaviour
 
         levelSO = match3.GetLevelSO();
         targetScore = levelSO.targetScore;
-    
+
         starActiveColor.a = 1.0f;
         UpdateSlider();
     }
@@ -41,17 +41,28 @@ public class SliderBar : MonoBehaviour
         float normalizedScore = NormalizeScore(score);
 
         if (normalizedScore > 0.33f && normalizedScore < 0.66f)
-        { starsArray[0].color = starActiveColor; }
+        {
+            UpdateStarState(starsArray[0]);
+        }
         else if (normalizedScore > 0.66f && normalizedScore < 0.99f)
         {
-            starsArray[0].color = starActiveColor;
-            starsArray[1].color = starActiveColor;
+            UpdateStarState(starsArray[0]);
+            UpdateStarState(starsArray[1]);
         }
         else if (slider.value >= 1.0f)
         {
-            starsArray[0].color = starActiveColor;
-            starsArray[1].color = starActiveColor;
-            starsArray[2].color = starActiveColor;
+            UpdateStarState(starsArray[0]);
+            UpdateStarState(starsArray[1]);
+            UpdateStarState(starsArray[2]);
+        }
+    }
+
+    private void UpdateStarState(Image star)
+    {
+        if (star.color != starActiveColor)
+        {
+            star.color = starActiveColor;
+            star.GetComponent<StarAnimation>().PlayStarAnimation(star.gameObject);
         }
     }
 

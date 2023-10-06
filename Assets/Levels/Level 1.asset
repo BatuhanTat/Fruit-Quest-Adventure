@@ -268,4 +268,4 @@ MonoBehaviour:
     isHole: 0
   goalType: 0
   moveAmount: 1
-  targetScore: 500
+  targetScore: 120

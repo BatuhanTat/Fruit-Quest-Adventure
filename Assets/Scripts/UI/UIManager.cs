@@ -98,17 +98,32 @@ public class UIManager : MonoBehaviour
         float normalizedScore = NormalizeScore(score);
 
         if (normalizedScore > 0.33f && normalizedScore < 0.66f)
-        { starsArr[0].gameObject.SetActive(true); }
+        { 
+            starsArr[0].gameObject.SetActive(true);
+            starsArr[0].GetComponent<StarAnimation>().PlayStarAnimation(starsArr[0].gameObject);
+        }
         else if (normalizedScore > 0.66f && normalizedScore < 0.99f)
         {
             starsArr[0].gameObject.SetActive(true);
             starsArr[1].gameObject.SetActive(true);
+            starsArr[0].GetComponent<StarAnimation>().PlayStarAnimation(starsArr[0].gameObject);
+            starsArr[1].GetComponent<StarAnimation>().PlayStarAnimation(starsArr[1].gameObject);
         }
         else if (normalizedScore >= 1.0f)
         {
             starsArr[0].gameObject.SetActive(true);
             starsArr[1].gameObject.SetActive(true);
             starsArr[2].gameObject.SetActive(true);
+            starsArr[0].GetComponent<StarAnimation>().PlayStarAnimation(starsArr[0].gameObject);
+            starsArr[1].GetComponent<StarAnimation>().PlayStarAnimation(starsArr[1].gameObject);
+            starsArr[2].GetComponent<StarAnimation>().PlayStarAnimation(starsArr[2].gameObject);
+        }
+    }
+    private void UpdateStarState(Image star)
+    {
+        if (star.gameObject.activeSelf)
+        {
+            star.GetComponent<StarAnimation>().PlayStarAnimation(star.gameObject);
         }
     }
     private float NormalizeScore(int score)
