@@ -24,7 +24,6 @@ public class LevelEditor : MonoBehaviour
     [SerializeField] Tilemap tilemap; // Reference to  Tilemap
     [SerializeField] Tilemap tilemapBlock; // Reference to  Tilemap Block
     [SerializeField] TileBase tileToInstantiate; // Reference to "rule tile" asset
-    [SerializeField] TileBase tileToInstantiate_Block; // Reference to "block tile" asset
 
     private Grid<GridPosition> grid;
 
@@ -102,15 +101,16 @@ public class LevelEditor : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Alpha5)) grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[4], grid.GetGridObject(x, y).GetIsHole());
             if (Input.GetKeyDown(KeyCode.Space))
             {
+                GemSO gem = levelSO.gemList[Random.Range(0, levelSO.gemList.Count)];
                 grid.GetGridObject(x, y).SetIsHole(!grid.GetGridObject(x, y).GetIsHole());
-                grid.GetGridObject(x, y).SetGemSO(levelSO.gemList[0], grid.GetGridObject(x, y).GetIsHole());
+                grid.GetGridObject(x, y).SetGemSO(gem, grid.GetGridObject(x, y).GetIsHole());
 
                 Vector3 worldPosition = grid.GetWorldPosition(x, y);
                 Vector3Int cellPosition = new Vector3Int(Mathf.FloorToInt(worldPosition.x), Mathf.FloorToInt(worldPosition.y), Mathf.FloorToInt(worldPosition.z));
 
                 if (grid.GetGridObject(x, y).GetIsHole())
                 {
-                    tilemapBlock.SetTile(cellPosition, tileToInstantiate_Block);
+                    tilemapBlock.SetTile(cellPosition, tileToInstantiate);
                 }
                 else
                 { tilemapBlock.SetTile(cellPosition, null); }
@@ -158,7 +158,7 @@ public class LevelEditor : MonoBehaviour
    
                 if (grid.GetGridObject(x, y) != null && grid.GetGridObject(x, y).IsHole())
                 {
-                    tilemapBlock.SetTile(cellPosition, tileToInstantiate_Block);
+                    tilemapBlock.SetTile(cellPosition, tileToInstantiate);
                     // Force the Tilemap to Refresh
                     tilemapBlock.RefreshAllTiles();
                 }

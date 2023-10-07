@@ -11,6 +11,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI movesText;
     [SerializeField] private TextMeshProUGUI scoreText;
     [SerializeField] private TextMeshProUGUI targetScoreText;
+    [SerializeField] private TextMeshProUGUI levelText;
     [Header("Complete Popup")]
     [SerializeField] private GameObject popupWinGameObject;
     [SerializeField] private TextMeshProUGUI scoreWinText;
@@ -22,10 +23,12 @@ public class UIManager : MonoBehaviour
     [SerializeField] Image[] starsFail;
     [Header("Pause Popup")]
     [SerializeField] private GameObject pauseMenuGameObject;
-    [SerializeField] private GameObject SFX_Button;
-    [SerializeField] private GameObject BG_Button;
+    [Header("Levels Panel")]
+    [SerializeField] private GameObject levelsPanel;
+    [SerializeField] ButtonStateHandler buttonStateHandler;
 
     private LevelSO levelSO;
+    public bool onPause { get; private set; } = false;
 
     private void Awake()
     {
@@ -37,12 +40,18 @@ public class UIManager : MonoBehaviour
         match3.OnOutOfMoves += Match3_OnOutOfMoves;
         match3.OnWin += Match3_OnWin;
     }
+
+    private void Start()
+    {
+        SetLevelText();
+    }
     private void Match3_OnWin(object sender, System.EventArgs e)
     {
         popupWinGameObject.SetActive(true);
         scoreWinText.text = match3.GetScore().ToString();
         UpdateStars(starsComplete);
         SFX_Manager.instance.PlaySFX(ClipType.LevelComplete);
+        GameManager.instance.CompleteLevel();
     }
 
     private void Match3_OnOutOfMoves(object sender, System.EventArgs e)
@@ -98,7 +107,7 @@ public class UIManager : MonoBehaviour
         float normalizedScore = NormalizeScore(score);
 
         if (normalizedScore > 0.33f && normalizedScore < 0.66f)
-        { 
+        {
             starsArr[0].gameObject.SetActive(true);
             starsArr[0].GetComponent<StarAnimation>().PlayStarAnimation(starsArr[0].gameObject);
         }
@@ -119,13 +128,7 @@ public class UIManager : MonoBehaviour
             starsArr[2].GetComponent<StarAnimation>().PlayStarAnimation(starsArr[2].gameObject);
         }
     }
-    private void UpdateStarState(Image star)
-    {
-        if (star.gameObject.activeSelf)
-        {
-            star.GetComponent<StarAnimation>().PlayStarAnimation(star.gameObject);
-        }
-    }
+
     private float NormalizeScore(int score)
     {
         float normalizedScore = (float)score / levelSO.targetScore;
@@ -138,42 +141,54 @@ public class UIManager : MonoBehaviour
         SceneManager.LoadScene(currentSceneIndex);
     }
 
-    public void LoadNextLevel()
-    {
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-        int nextSceneIndex = currentSceneIndex + 1;
-
-        if (nextSceneIndex < SceneManager.sceneCountInBuildSettings)
-        {
-            SceneManager.LoadScene(nextSceneIndex);
-        }
-        else
-        {
-            // There are no more scenes in the build order, so reload the first scene (index 0).
-            SceneManager.LoadScene(0);
-        }
-    }
     public void TogglePausePanel()
     {
         pauseMenuGameObject.SetActive(!pauseMenuGameObject.activeSelf);
         BGMusic.instance.BGPauseToggle(pauseMenuGameObject.activeSelf);
+        onPause = pauseMenuGameObject.activeSelf;
     }
 
     public void Toggle_SFX(RectTransform rectTransform)
     {
-        TogglePauseButtonVisual(rectTransform);
+        SoundToggleButtonsVisual(rectTransform);
         SFX_Manager.instance.audioSource.volume = SFX_Manager.instance.audioSource.volume == 0.0f ? 1.0f : 0.0f;
     }
     public void Toggle_BG(RectTransform rectTransform)
     {
-        TogglePauseButtonVisual(rectTransform);
+        SoundToggleButtonsVisual(rectTransform);
         BGMusic.instance.audioSource.volume = BGMusic.instance.audioSource.volume == 0.0f ? BGMusic.instance.pauseVolume : 0.0f;
         BGMusic.instance.isMuted = (!BGMusic.instance.isMuted);
     }
+    public void ToggleLevelsPanel()
+    {
+        levelsPanel.SetActive(!levelsPanel.activeSelf);
+        buttonStateHandler.SetLevelButtons(PlayerPrefs.GetInt("UnlockedLevels", 1));
+    }
 
-    private void TogglePauseButtonVisual(RectTransform rectTransform)
+    public void SelectLevel(Button button)
+    {
+        GameManager.instance.LoadLevel(button.name);
+        Debug.Log("Clicked button name: " + button.name);
+        StartCoroutine(ToggleUIDelay());
+    }
+
+    public void LoadNextLevelButton()
+    { GameManager.instance.LoadNextlevel(); }
+
+    public void Quit()
+    { Application.Quit(); }
+
+    private void SetLevelText()
+    { levelText.text = "Level: " + SceneManager.GetActiveScene().buildIndex.ToString(); }
+
+    private void SoundToggleButtonsVisual(RectTransform rectTransform)
     {
         bool isOn = rectTransform.GetComponent<Toggle>().isOn;
         rectTransform.anchoredPosition = isOn ? new Vector2(190.0f, 0.0f) : Vector2.zero;
+    }
+    private IEnumerator ToggleUIDelay()
+    {
+        yield return new WaitForSeconds(0.2f);
+        ToggleLevelsPanel();
     }
 }

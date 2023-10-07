@@ -28,7 +28,8 @@ public class Match3Visual : MonoBehaviour
     [SerializeField] Tilemap tilemap; // Reference to your Tilemap
     [SerializeField] Tilemap tilemapBlock; // Reference to  Tilemap Block
     [SerializeField] TileBase tileToInstantiate; // Reference to your tile asset
-    [SerializeField] TileBase tileToInstantiate_Block; // Reference to "block tile" asset
+    [Space]
+    [SerializeField] UIManager UIManager;
 
     private Grid<Match3.GemGridPosition> grid;
     private Dictionary<Match3.GemGrid, GemGridVisual> gemGridDictionary;
@@ -134,7 +135,7 @@ public class Match3Visual : MonoBehaviour
                 Match3.GemGridPosition gemGridPosition = grid.GetGridObject(x, y);
                 if (gemGridPosition != null && gemGridPosition.IsHole())
                 {
-                    tilemapBlock.SetTile(cellPosition, tileToInstantiate_Block);
+                    tilemapBlock.SetTile(cellPosition, tileToInstantiate);
                     // Force the Tilemap to Refresh
                     tilemapBlock.RefreshAllTiles();
                 }   
@@ -168,7 +169,7 @@ public class Match3Visual : MonoBehaviour
         }
     }
 
-
+    // Backlog: Update inputs with "IPointerDownHandler and IPointerUpHandler" 
     private void Update()
     {
         if (!isSetup) return;
@@ -186,13 +187,13 @@ public class Match3Visual : MonoBehaviour
             case State.WaitingForUser:
 
                 // Mouse input
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) && !UIManager.onPause)
                 {
                     Vector3 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
                     grid.GetXY(mouseWorldPosition, out startDragX, out startDragY);
                 }
 
-                if (Input.GetMouseButtonUp(0))
+                if (Input.GetMouseButtonUp(0) && !UIManager.onPause)
                 {
                     Vector3 mouseWorldPosition = UtilsClass.GetMouseWorldPosition();
                     grid.GetXY(mouseWorldPosition, out int x, out int y);
@@ -226,12 +227,12 @@ public class Match3Visual : MonoBehaviour
                 {
                     Touch touch = Input.GetTouch(0);
 
-                    if (touch.phase == TouchPhase.Began)
+                    if (touch.phase == TouchPhase.Began && !UIManager.onPause)
                     {
                         Vector3 touchWorldPosition = UtilsClass.GetWorldPosition(touch.position);
                         grid.GetXY(touchWorldPosition, out startDragX, out startDragY);
                     }
-                    else if (touch.phase == TouchPhase.Ended)
+                    else if (touch.phase == TouchPhase.Ended && !UIManager.onPause)
                     {
                         Vector3 touchWorldPosition = UtilsClass.GetWorldPosition(touch.position);
                         grid.GetXY(touchWorldPosition, out int x, out int y);
