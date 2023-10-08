@@ -26,6 +26,9 @@ public class UIManager : MonoBehaviour
     [Header("Levels Panel")]
     [SerializeField] private GameObject levelsPanel;
     [SerializeField] ButtonStateHandler buttonStateHandler;
+    [Header("Sound Toggles")]
+    [SerializeField] private RectTransform rectTransform_SFX;
+    [SerializeField] private RectTransform rectTransform_BG;
 
     private LevelSO levelSO;
     public bool onPause { get; private set; } = false;
@@ -44,6 +47,7 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         SetLevelText();
+        UpdateSoundToggles();
     }
     private void Match3_OnWin(object sender, System.EventArgs e)
     {
@@ -152,6 +156,7 @@ public class UIManager : MonoBehaviour
     {
         SoundToggleButtonsVisual(rectTransform);
         SFX_Manager.instance.audioSource.volume = SFX_Manager.instance.audioSource.volume == 0.0f ? 1.0f : 0.0f;
+        SFX_Manager.instance.isMuted = (!SFX_Manager.instance.isMuted);
     }
     public void Toggle_BG(RectTransform rectTransform)
     {
@@ -159,6 +164,18 @@ public class UIManager : MonoBehaviour
         BGMusic.instance.audioSource.volume = BGMusic.instance.audioSource.volume == 0.0f ? BGMusic.instance.pauseVolume : 0.0f;
         BGMusic.instance.isMuted = (!BGMusic.instance.isMuted);
     }
+    private void SoundToggleButtonsVisual(RectTransform rectTransform)
+    {
+        Vector2 rectPosition = rectTransform.anchoredPosition;
+        rectTransform.anchoredPosition = rectPosition == Vector2.zero ? new Vector2(190.0f, 0.0f) : Vector2.zero;
+    }
+
+    private void UpdateSoundToggles()
+    {
+        rectTransform_SFX.anchoredPosition = (!SFX_Manager.instance.isMuted) ? new Vector2(190.0f, 0.0f) : Vector2.zero;
+        rectTransform_BG.anchoredPosition = (!BGMusic.instance.isMuted) ? new Vector2(190.0f, 0.0f) : Vector2.zero;
+    }
+
     public void ToggleLevelsPanel()
     {
         levelsPanel.SetActive(!levelsPanel.activeSelf);
@@ -181,11 +198,7 @@ public class UIManager : MonoBehaviour
     private void SetLevelText()
     { levelText.text = "Level: " + SceneManager.GetActiveScene().buildIndex.ToString(); }
 
-    private void SoundToggleButtonsVisual(RectTransform rectTransform)
-    {
-        bool isOn = rectTransform.GetComponent<Toggle>().isOn;
-        rectTransform.anchoredPosition = isOn ? new Vector2(190.0f, 0.0f) : Vector2.zero;
-    }
+ 
     private IEnumerator ToggleUIDelay()
     {
         yield return new WaitForSeconds(0.2f);

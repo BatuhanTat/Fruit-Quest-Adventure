@@ -15,6 +15,7 @@ public class SFX_Manager : MonoBehaviour
     [SerializeField] AudioClip levelLose_SFX;
 
     [HideInInspector] public AudioSource audioSource;
+    [HideInInspector] public bool isMuted = false;
 
     private void Awake()
     {

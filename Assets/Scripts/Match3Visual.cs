@@ -30,6 +30,8 @@ public class Match3Visual : MonoBehaviour
     [SerializeField] TileBase tileToInstantiate; // Reference to your tile asset
     [Space]
     [SerializeField] UIManager UIManager;
+    [Space]
+    [SerializeField] Transform BGImageTransform;
 
     private Grid<Match3.GemGridPosition> grid;
     private Dictionary<Match3.GemGrid, GemGridVisual> gemGridDictionary;
@@ -66,7 +68,9 @@ public class Match3Visual : MonoBehaviour
         cameraTransform.position = new Vector3(grid.GetWidth() * 0.5f,
                                                grid.GetHeight() * 0.5f + cameraYOffset,
                                                cameraTransform.position.z);
-
+        BGImageTransform.position = new Vector3(grid.GetWidth() * 0.5f,
+                                               grid.GetHeight() * 0.5f + cameraYOffset,
+                                               0.0f);
         match3.OnGemGridPositionDestroyed += Match3_OnGemGridPositionDestroyed;
         match3.OnNewGemGridSpawned += Match3_OnNewGemGridSpawned;
 
