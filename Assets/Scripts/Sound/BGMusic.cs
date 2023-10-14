@@ -12,6 +12,7 @@ public class BGMusic : MonoBehaviour
     private float startVolume;
 
     [HideInInspector] public bool isMuted = false;
+
     private void Awake()
     {
         if (instance != null)
@@ -21,6 +22,16 @@ public class BGMusic : MonoBehaviour
         }
         instance = this;
         audioSource = GetComponent<AudioSource>();
+        SetAudioSource();
+    }
+
+    public void MuteToggle()
+    {
+        StopAllCoroutines();
+        isMuted = !isMuted;
+        BGMusic.instance.audioSource.volume = BGMusic.instance.isMuted == true ? 0.0f : BGMusic.instance.pauseVolume;
+        audioSource.volume = isMuted == true ? 0.0f : BGMusic.instance.pauseVolume;
+        GameManager.instance.SaveBGMusic_Setting(isMuted);
     }
 
     // Call this method to start a fade from the current volume to the target volume
@@ -55,5 +66,11 @@ public class BGMusic : MonoBehaviour
         // Ensure the volume reaches the exact target value
         audioSource.volume = targetVolume;
         startVolume = targetVolume;
+    }
+
+    private void SetAudioSource()
+    {
+        isMuted = PlayerPrefs.GetInt("IsMutedBG", 0) == 1 ? true : false;
+        audioSource.volume = isMuted ? 0.0f : 1.0f;
     }
 }

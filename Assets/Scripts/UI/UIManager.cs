@@ -155,14 +155,12 @@ public class UIManager : MonoBehaviour
     public void Toggle_SFX(RectTransform rectTransform)
     {
         SoundToggleButtonsVisual(rectTransform);
-        SFX_Manager.instance.audioSource.volume = SFX_Manager.instance.audioSource.volume == 0.0f ? 1.0f : 0.0f;
-        SFX_Manager.instance.isMuted = (!SFX_Manager.instance.isMuted);
+        SFX_Manager.instance.MuteToggle();
     }
     public void Toggle_BG(RectTransform rectTransform)
     {
         SoundToggleButtonsVisual(rectTransform);
-        BGMusic.instance.audioSource.volume = BGMusic.instance.audioSource.volume == 0.0f ? BGMusic.instance.pauseVolume : 0.0f;
-        BGMusic.instance.isMuted = (!BGMusic.instance.isMuted);
+        BGMusic.instance.MuteToggle();    
     }
     private void SoundToggleButtonsVisual(RectTransform rectTransform)
     {

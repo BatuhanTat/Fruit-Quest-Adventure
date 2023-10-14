@@ -106,6 +106,19 @@ public class GameManager : MonoBehaviour
         return PlayerPrefs.GetInt("Level_" + (levelIndex - 1), 0) == 1;
     }
 
+    public void SaveBGMusic_Setting(bool isMuted)
+    {
+        int value = isMuted ? 1 : 0;
+        PlayerPrefs.SetInt("IsMutedBG", value);
+        PlayerPrefs.Save();
+    }
+    public void SaveSFX_Setting(bool isMuted)
+    {
+        int value = isMuted ? 1 : 0;
+        PlayerPrefs.SetInt("IsMutedSFX", value);
+        PlayerPrefs.Save();
+    }
+
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;

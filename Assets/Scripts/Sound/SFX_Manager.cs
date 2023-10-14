@@ -27,7 +27,16 @@ public class SFX_Manager : MonoBehaviour
         instance = this;
         DontDestroyOnLoad(transform.parent);
         audioSource = GetComponent<AudioSource>();
+        SetAudioSource();
     }
+
+    public void MuteToggle()
+    {
+        audioSource.volume = audioSource.volume == 0.0f ? 1.0f : 0.0f;
+        isMuted = !isMuted;
+        GameManager.instance.SaveSFX_Setting(isMuted);
+    }
+
     public void PlaySFX(ClipType type, float volume = 1)
     {
         var clip = GetClip(type);
@@ -42,9 +51,15 @@ public class SFX_Manager : MonoBehaviour
             ClipType.Match3 => match3_SFX,
             ClipType.Match4 => match4_SFX,
             ClipType.LevelComplete => levelComplete_SFX,
-            ClipType.LevelLose => levelLose_SFX,    
+            ClipType.LevelLose => levelLose_SFX,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
+    }
+
+    private void SetAudioSource()
+    {
+        isMuted = PlayerPrefs.GetInt("IsMutedSFX", 0) == 1 ? true : false;
+        audioSource.volume = isMuted ? 0.0f : 1.0f;
     }
 }
 
